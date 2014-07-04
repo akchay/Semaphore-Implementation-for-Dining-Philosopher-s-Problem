@@ -1,0 +1,32 @@
+DOWN
+
+
+Name 
+         down - does a down on a semaphore
+         
+         
+        
+SYNOPSIS
+         #include <lib.h>
+         #include <unistd.h>
+         int down (void)
+         
+         
+DESCRIPTION
+
+        DOWN causes the calling process to do a down on a semaphore. If the state of that semaphore was initially 1 
+        then the state is set to 0 and the process enters the critical region. Otherwise if the state of the semaphore
+        was initially 0 and a process calls down, then the calling process is put into the queue.
+        
+        
+RETURN VALUE
+
+Upon successful down, 1 is returned. On unsuccessful down, -1 is returned. If the process is put into the queue then 
+SUSPEND is returned. 
+
+
+ERRORS
+
+On reference of a pointer to NULL memory, error is generated
+
+

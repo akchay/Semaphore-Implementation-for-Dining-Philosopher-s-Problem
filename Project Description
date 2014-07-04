@@ -1,0 +1,82 @@
+About Project 2
+
+Step 1: 
+
+First I registered the four system calls. 
+In callnr.h (/usr/src/include/minix/callnr.h) I found the free slots which were 35, 44, 56 and 70. There I defined the four 
+system calls. 
+Then in table.c (/usr/src/servers/pm/table.c) I declared the functions of the four system calls
+After that in proto.h (/usr/src/servers/pm/proto.h) I declared the prototype of the four functions in misc.c section. 
+After that in /usr/src/servers/pm/misc.c I added the definition of the system calls. 
+And finally run make commands and rebooted the system. 
+
+Step 2:
+
+After registering the four system calls I now added the structure of the semaphores in /usr/src/servers/pm/mysem.h
+The push and pop functions are declared there along with the definition of the semaphore structure. The structure of the semaphore
+includes state, descriptor, number of processes waiting for it, an array to keep track of waiting processes, head and tail to keep
+track of the array and reference count. State 0 means some process is using the semaphore. State 1 means its free to use. 
+Then I added an array of 12 pointers in the /usr/src/servers/pm/mproc.h by using this line: struct sebuf *semarray[12]
+The definitions of the push and pop functions are done in /usr/src/servers/pm/misc.c just in the starting. 
+After this I did the initialization of the array of 12 pointers to NULL in /usr/src/servers/pm/main.c 
+In forkexit.c (/usr/src/servers/pm/forkexit.c), I edited in do_fork so that the child inherits all the semaphores created by the
+parent. The ref_count is increased if the child waits on the semaphore. Then in exit_proc I edited some code. This has to be done
+because when a process exits, the semaphore has to freed or the ref_count has to be decreased. 
+Now all the housekeeping and declaration of important variables and functions is done. 
+
+
+Step 3: 
+
+Then I created a folder in /usr/src/lib with the name libsem. In this I created a file libsem.c in which the system call is called.
+That is _syscall(PM_PROC_NR, FUNCTION, &m) is used here. This is done for all the four functions. Then I created a header file in
+/usr/include with the name libsem.h and here the prototypes of all the four functions is defined.  
+
+Step 4: Creating the semaphore
+
+The name of the function is do_createsem. In this I created a semaphore with the value of the descriptor which is passed.
+If the semaphore with the descriptor is already created then "descriptor in use" is printed. Else on successful creation of 
+semaphore, "Semaphore created" is printed. See the do_createsem function in /usr/src/servers/pm/misc.c for further details.
+
+
+Step 5: Down on semaphore
+
+The name of the function is do_down. In this if the state is 1 and the process wants to do a down on the semaphore then 
+the process is able to do a down on that, and the state is set to zero. Also "Semaphore was free to use before. But now I entered 
+into my critical region" is printed. If the process does a down on a semaphore whose state is already zero, then that process
+is put into the queue. And "The semaphore is not free to use. You have been put into the waiting list!" is printed. And suspend
+is returned. 
+
+Step 6: Up on semaphore
+
+The name of the function is do_up. In this, if the state is zero and no process is waiting in the queue then the state is set to 1
+if a process does an UP. "The Semaphore has been released. Now you should be able to use the semaphore!" is printed. Else if the
+state is 1 then the first process waiting in the queue for that semaphore is taken out from the queue. And a signal is sent to 
+that process so that it awakes. Also the number of processes waiting in the queue is decreased by 1. 
+
+Step 7: Close semaphore
+
+The name of the function is do_close. In this, if a process wants to close a semaphore whose ref_count is greater than 0 then the
+ref_count is decreased by 1 and the pointer is set to NULL. There might be other processes also waiting on that semaphore. So the 
+pointer is not released. But if the ref_count is zero then if a process does a close, then the pointer is also released by free() 
+system call. 
+
+Step 8: Test program 1
+
+The name of the test program is test.c ; In this firstly the parent creates the semaphore of that descriptor which is passed to 
+the do_createsem function (only if it has not been created). Then parent spawns a child. The child also creates the semaphore with
+the same descriptor. But it fails to do because it has inherited from the parent. Thus it fails. But the ref_count increases by 1. 
+Then the child spawns its child. Thus the grand child also creates a semaphore with the same descriptor value. It also fails. But 
+the ref_count increases to 2. Thus the test program works fine. The ref_count increased to 2 and the child and grand child failed
+to create the semaphore with same descriptor.  
+
+Step 9: Test program 2
+
+The name of this test program is dining.c and in this I try to show that the problem associated with dining philosopher is solved.
+That is if there are 3 philosophers then 1 can eat at one time only and the other two are thinking or hungry. If there are 5 of 
+them then 2 philosophers can eat simultaneously. I tried to adhere to the project description. I use take_forks(), put_forks(),
+test() and philosopher() functions. I tried to implement independent sets of philosophers on different tables. I used 5
+philosophers at one time and only 2 were eating at one time and the remaining one was eating alone. Thus it ran 
+successfully. 
+
+
+

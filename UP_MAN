@@ -1,0 +1,30 @@
+UP
+
+
+Name 
+         up - does an up on a semaphore
+         
+         
+        
+SYNOPSIS
+         #include <lib.h>
+         #include <unistd.h>
+         int up (void)
+         
+         
+DESCRIPTION
+
+        UP causes the calling process to do an up on a semaphore. If the state of that semaphore is 0 and no process
+        is waiting in the queue then UP is done successfully. Otherwise if there is is a process in the queue waiting
+        for that semaphore then that process is taken out from the queue and is awakened. 
+        
+        
+RETURN VALUE
+
+Upon successful up, 1 is returned. On unsuccessful up it returns -1.
+
+
+
+ERRORS
+
+On reference of a pointer to NULL memory, error is generated. 

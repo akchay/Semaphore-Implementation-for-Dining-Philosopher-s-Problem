@@ -1,0 +1,32 @@
+
+CREATESEM
+
+Name 
+         createsem - creates a semaphore
+         
+        
+SYNOPSIS
+         #include <lib.h>
+         #include <unistd.h>
+         int createsem(void)
+         
+         
+DESCRIPTION
+
+        CREATESEM causes the creation of a new semaphore (new desc) when the descriptor is passed. If the semaphore with
+        that descriptor is already created then an error message is printed out.
+        
+        
+RETURN VALUE
+
+Upon successful creation, createsem returns 1. On unsuccessful creation it returns -1.
+
+
+ERRORS
+
+On reference of a pointer to NULL memory, error is generated. 
+
+
+
+       
+          

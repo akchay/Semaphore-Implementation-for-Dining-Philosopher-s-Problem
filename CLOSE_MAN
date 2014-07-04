@@ -1,0 +1,28 @@
+CLOSE
+
+
+Name 
+         close - does a close on a semaphore
+         
+         
+        
+SYNOPSIS
+         #include <lib.h>
+         #include <unistd.h>
+         int close (void)
+         
+         
+DESCRIPTION
+
+        CLOSE causes the calling process to close a semaphore if no process is waiting on that semaphore. If no 
+        process is waiting on a semaphore then the pointer to the semaphore is released and set to NULL. CLOSE is done 
+        successfully.        
+        
+RETURN VALUE
+
+Upon successful close, 1 is returned. On unsuccessful close -1 is returned.
+
+ERRORS
+
+On reference of a pointer to NULL memory, error is generated
+
